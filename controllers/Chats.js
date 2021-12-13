@@ -117,4 +117,32 @@ chatController.getMessaged = async (req, res, next) => {
   });
 };
 
+// Xử lý lấy danh sách cuộc hội thoại
+chatController.getChats = async (req, res, next) => {
+    try {
+        let chats = await ChatModel.find({
+            member: req.params.userId
+        });
+
+        // Danh sách các chatID của người dùng đang chat
+        let _ids = chats.map(chat => chat._id);
+
+        // Chỉ lấy danh sách các message cuối cùng của các conversation.
+        let last_messages = await Promise.all(_ids.map(async id => {
+            let messages = await MessagesModel.find({
+                chat: id
+            }).populate('user');
+            return messages.slice(-1)[0];
+        }));
+        
+        return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+            data: last_messages
+        });
+    } catch (e) {
+        return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+            message: e.message
+        });
+    }
+}
+
 module.exports = chatController;
