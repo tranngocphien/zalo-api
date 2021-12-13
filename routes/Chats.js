@@ -14,4 +14,12 @@ chatsRoutes.get(
 
 chatsRoutes.get("/getMessaged", auth, asyncWrapper(chatController.getMessaged));
 
+// Lấy danh sách các cuộc hội thoại.
+chatsRoutes.get(
+    "/getChats/:userId",
+    auth,
+    asyncWrapper(chatController.getChats),
+);
+
+
 module.exports = chatsRoutes;
