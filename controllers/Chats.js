@@ -48,7 +48,17 @@ chatController.send = async (req, res, next) => {
         await message.save();
         let messageNew = await MessagesModel.findById(message._id)
           .populate("chat")
-          .populate("user");
+          .populate({
+            path: "user",
+            select:
+              "phonenumber username gender birthday avatar blocked_inbox blocked_diary",
+            models: "Users",
+            populate: {
+              path: "avatar",
+              select: "_id fileName",
+              model: "Documents",
+            },
+          });
         return res.status(httpStatus.OK).json({
           data: messageNew,
         });
