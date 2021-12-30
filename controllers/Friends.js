@@ -177,6 +177,10 @@ friendsController.listFriends = async (req, res, next) => {
 
             let users = await UserModel.find().where('_id').in(requested.concat(accepted)).populate('avatar').populate('cover_image').exec()
 
+            for(var i = 0; i < users.length; i++) {
+                var member = users[i]
+            }
+
             res.status(200).json({
                 code: 200,
                 message: "Danh sách bạn bè",
