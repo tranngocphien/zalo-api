@@ -275,13 +275,23 @@ usersController.setBlock = async (req, res, next) => {
         let targetId = req.body.user_id;
         let type = req.body.type;
         let user = await UserModel.findById(req.userId);
-        blocked = []
-        if (user.hasOwnProperty('blocked')) {
-            blocked = user.blocked_inbox
+        var blocked = user.blocked_inbox
+        // if (user.hasOwnProperty('blocked')) {
+        //     console.log("vào đây nè")
+        //     blocked = user.blocked_inbox
+        // }
+
+        if (blocked.includes(targetId)) {
+            res.status(400).json({
+                code: 400,
+                message: "Đã chặn người này rồi",
+                data: user
+            });
+
+            return
         }
     
         if(type) {
-     
             if(blocked.indexOf(targetId) === -1) {
                 blocked.push(targetId);
             }
