@@ -222,16 +222,11 @@ postsController.delete = async (req, res, next) => {
 postsController.list = async (req, res, next) => {
     try {
         let posts = [];
-        let userId = null;
-        if (req.params.userId) {
-            userId = req.params.userId;
-        } else {
-            userId = req.userId;
-        }
-        if (userId) {
+        let userId = req.userId;
+        if (req.query.userId) {
             // get Post of one user
             posts = await PostModel.find({
-                author: userId
+                author: req.query.userId
             }).populate('images', ['fileName']).populate('videos', ['fileName']).populate({
                 path: 'author',
                 select: '_id username phonenumber avatar',
