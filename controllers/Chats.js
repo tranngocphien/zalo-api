@@ -124,23 +124,28 @@ chatController.getChats = async (req, res, next) => {
         }).select('_id name member type').populate({
             path: 'member',
             select: '_id username avatar',
-        });
+            populate: {
+                path: "avatar",
+                select: "_id fileName",
+                model: "Documents",
+            },
+        }).lean();
 
-        // Lấy hết danh sách chat.
-        for(var i= 0; i < chats.length; i++) {
-            chats[i]["member"] = await Promise.all(chats[i]["member"].map(async (user) => {
-                user["avatar"] = await DocumentModel.findById(user["avatar"]);
-                return user;
-            }));
-            chats[i] = chats[i].toJSON();
-            chats[i]["message"] = await MessagesModel.find({chat: chats[i]["_id"]}).select('user content createdAt updatedAt').populate({
+        let _ids = chats.map(chat => chat._id);
+
+         let messages = await Promise.all(_ids.map(async id => {
+             let messages = await MessagesModel.find({
+                 chat: id
+             }).select('user content createdAt updatedAt').populate({
                 path: 'user', 
                 select: '_id username avatar phonenumber'
-            });
-        }
+            }).lean();
+             return messages;
+         }));
 
         return res.status(200).json({
             chat: chats,
+            message:messages
         });
     } catch (e) {
         return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
