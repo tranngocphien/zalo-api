@@ -135,7 +135,7 @@ chatController.getChats = async (req, res, next) => {
             chats[i] = chats[i].toJSON();
             chats[i]["message"] = await MessagesModel.find({chat: chats[i]["_id"]}).select('user content createdAt updatedAt').populate({
                 path: 'user', 
-                select: '_id username avatar'
+                select: '_id username avatar phonenumber'
             });
         }
 
