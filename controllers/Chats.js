@@ -197,8 +197,18 @@ chatController.createGroupChat = async (req, res, next) => {
                 });
         await chat.save();
         var chatId = await chat._id;
+        var groupChat = await ChatModel.findById(chatId).populate({
+            path: 'member',
+            select: '_id username avatar',
+            populate: {
+                path: "avatar",
+                select: "_id fileName",
+                model: "Documents",
+            },
+        });
+
         return res.status(httpStatus.OK).json({
-                    data: chat,
+                    data: groupChat,
                     message: 'Create group chat success',
                     response: 'CREATE_GROUP_CHAT_SUCCESS'
                 });
